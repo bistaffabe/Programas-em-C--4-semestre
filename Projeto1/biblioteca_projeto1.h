@@ -1,15 +1,23 @@
-#ifndef lib_h_include
-#define lib_h_included
+//
+// Created by Beatriz Bistaffa on 30/09/25.
+//
+
+#ifndef PROJETO1_BIBLIOTECA_PROJETO1_H
+#define PROJETO1_BIBLIOTECA_PROJETO1_H
+
 
 #include <ctype.h>
 #include <string.h>
+#include <locale.h>
+//#include <conio.h>
+#include<time.h>//necessário p/ função time()
 
 typedef struct data
 {
     int dia;
     int mes;
     int ano;
-} Data;
+}Data;
 
 typedef struct dados
 {
@@ -17,21 +25,22 @@ typedef struct dados
     int idade;
     int id;
     char especie[30];
+    int atendido;
     int prior;
     Data aniv;
-} Dados;
+}Dados;
 
 typedef struct no
 {
     struct no *prox;
     Dados info;
-} No;
+}No;
 
 typedef struct lista
 {
     No* ini;
     No* fim;
-} Fila;
+}Fila;
 
 Fila* CriaFila(void)
 {
@@ -47,16 +56,12 @@ int vaziaFila(Fila* f)
     else return 0;
 }
 
-No* ins_fim(No *fim, char nome[50], char idade, char especie[30], int prior, int dia, int mes, int ano)
+No* ins_fim(No *fim, Dados d)
 {
+    //No* ins_fim(No *fim, Dados A)
     No* novo = (No*)malloc(sizeof(No));
-    strcpy(novo->info.nome, nome);
-    novo->info.idade = idade;
-    strcpy(novo->info.especie, especie);
-    novo->info.prior = prior;
-    novo->info.aniv.dia = dia;
-    novo->info.aniv.mes = mes;
-    novo->info.aniv.ano = ano;
+    novo->info=d;
+    novo->prox = NULL;
     if (fim != NULL)
     {
         fim->prox = novo;
@@ -64,17 +69,29 @@ No* ins_fim(No *fim, char nome[50], char idade, char especie[30], int prior, int
     return novo;
 }
 
-void insere_pet(Fila *f, char nome[50], int idade, char especie[30], int prior, int dia, int mes, int ano)
+void insere_pet(Fila *f, Dados d)
 {
-    f->fim = ins_fim(f->fim, nome, idade, especie, prior, dia, mes, ano);
+    f->fim = ins_fim(f->fim, d);
     if (f->ini == NULL)
     {
         f->ini = f->fim;
     }
 }
 
+int gera (void)
+{
+    int j;
 
-void transferencia(Fila *atendidos, Fila *f) {
+    srand(time(NULL));
+
+    j=rand() % 900 + 100;
+    //printf("%d ", j);
+    return j;
+}
+
+
+void transferencia(Fila *atendidos, Fila *f)
+{
     No *aux = f->ini;
     f->ini = aux->prox;
     if (f->ini == NULL) {
@@ -91,17 +108,20 @@ void transferencia(Fila *atendidos, Fila *f) {
     }
 }
 
-No* remove_pet(No* ini)
-{
-    No *p = ini->prox;
-    free(ini);   // libera o primeiro n�
-    return p;    // retorna o novo in�cio
-}
 
-void atende(Fila *f, Fila *atendidos)
+void atende(Fila *f, Fila *atendidos, Fila *geral)
 {
     No* aux = f->ini;
-    transferencia(atendidos,f);
+    No* g = geral->ini;
+    while (g != NULL)
+    {
+        if (strcmp(g->info.nome, aux->info.nome) == 0)
+        {
+            g->info.atendido = 1;   // marca no geral
+        }
+            g = g->prox;
+    }
+    transferencia(atendidos, f);
 }
 
 void imprime_prox(Fila *f)
@@ -113,23 +133,83 @@ void imprime_prox(Fila *f)
     }
     else
     {
-    printf("\n%s | ", aux->info.nome);
-    printf("%s | ", aux->info.especie);
-    printf("%d | ", aux->info.prior);
+        printf("\n%s | ", aux->info.nome);
+        printf("%s | ", aux->info.especie);
+        if (aux->info.prior==1)
+        {
+            printf("Atendimento normal | ");
+        }
+        else
+        {
+            printf("Atendimento emergencial | ");
+        }
     }
 }
 
-int busca(Fila *f, char nome[50])
+int buscaid(Fila *f, int id)
 {
     No* aux = f->ini;
     while (aux != NULL)
+    {
+        if (aux->info.id == id)
         {
+            printf("\nO animal buscado está cadastrado!");
+            printf("\n%d |", aux-> info.id);
+            printf("%s | ", aux->info.nome);
+            printf("%s | ", aux->info.especie);
+            if (aux->info.prior==1)
+            {
+                printf("Atendimento normal | ");
+            }
+            else
+            {
+                printf("Atendimento emergencial | ");
+            }
+            if (aux->info.atendido == 0)
+            {
+                printf("Não foi atendido");
+            }
+            else
+            {
+                printf("Já foi atendido");
+            }
+            return 1;
+        }
+        else
+        {
+            aux = aux->prox;
+        }
+    }
+    return 0;
+}
+
+int buscanome(Fila *f, char nome[50])
+{
+    No* aux = f->ini;
+    while (aux != NULL)
+    {
         if (strcmp(aux->info.nome, nome)==0)
         {
-            printf("\nO animal buscado esta cadastrado!");
-            printf("\n%s | ", aux->info.nome);
+            printf("\nO animal buscado está cadastrado!");
+            printf("\n%d |", aux-> info.id);
+            printf("%s | ", aux->info.nome);
             printf("%s | ", aux->info.especie);
-            printf("%d | ", aux->info.prior);
+            if (aux->info.prior==1)
+            {
+                printf("Atendimento normal | ");
+            }
+            else
+            {
+                printf("Atendimento emergencial | ");
+            }
+            if (aux->info.atendido == 0)
+            {
+                printf("Não foi atendido");
+            }
+            else
+            {
+                printf("Já foi atendido");
+            }
             return 1;
         }
         else
@@ -145,13 +225,22 @@ void imprime(Fila *f)
     No* aux = f->ini;
     while (aux != NULL)
     {
-        printf("\n%s | ", aux->info.nome);
+        printf("\n%d | ", aux->info.id);
+        printf("%s | ", aux->info.nome);
         printf("%s | ", aux->info.especie);
         printf("%d | ", aux->info.idade);
         printf("%d/%d/%d | ", aux->info.aniv.dia, aux->info.aniv.mes, aux->info.aniv.ano);
-        printf("%d ", aux->info.prior);
+        if (aux->info.prior==1)
+        {
+            printf("Atendimento normal");
+        }
+        else
+        {
+            printf("Atendimento emergencial");
+        }
         aux = aux->prox;
     }
 }
 
-#endif // fila_h_include
+
+#endif //PROJETO1_BIBLIOTECA_PROJETO1_H
