@@ -1,7 +1,8 @@
 #include <stdlib.h>  // rand, srand
 #include <time.h>    // time
-#define TAM 500000
+#define TAM 50
 #include <stdio.h>
+#include <time.h>
 
 typedef struct {
     int chave;
@@ -22,37 +23,80 @@ void troca(item *a, item *b) {
     item temp = *a;
     *a = *b;
     *b = temp;
+
 }
+
 
 
 void insercao(item *v, int n) {
-    int i,j;
-   // srand(time(NULL));
+    int i, j;
     for (i = 1; i < n; i++) {
-        for (j = i; j > 0; j++)
-        {
-            if (v[j-1].chave < v[j].chave) {
-                troca(&v[j-1], &v[j]);
+        for (j=i;j>0;j--){
+            if (v[j - 1].chave < v[j].chave) {
+                // ordem decrescente
+                troca(&v[j - 1], &v[j]);
             }
         }
     }
-    for (i = 0; i < n; i++) {
-        printf("Chave %d: ", v[i].chave);
+}
+
+
+int particao(item *v, int LI, int LS)
+{
+    int aux, pivo, e=LI, d=LS;
+    pivo=v[e].chave;
+    while(e < d)
+    {
+        while((v[e].chave>=pivo)&& (e<LS)) { e++;}
+        while((v[d].chave<pivo)&&(d>LI)) {d--;}
+        if(e<d)
+        {
+            aux = v[e].chave; v[e].chave=v[d].chave; v[d].chave=aux;
+        }
+    }
+    aux = v[LI].chave; v[LI].chave=v[d].chave; v[d].chave=aux;
+    return d;
+}
+
+void quicksort(item *v, int LI, int LS)
+{
+    if(LI<LS)
+    {
+        int p,i;
+        p = particao(v,LI,LS);
+        quicksort(v,LI,p-1);
+        quicksort(v,p+1,LS);
     }
 }
 
+
 int main()
 {
+    int i;
     item vetor[TAM];
-    geraVetorAleatorio(vetor, TAM, 134);
+    clock_t inicio, fim;
+    double tempo_insercao, tempo_quick;
+
+    geraVetorAleatorio(vetor, TAM, 500);
     printf("Exemplo de vetor aleatorio:\n");
-    /*for (int i = 0; i < TAM; i++)
-    {
-        printf("chave = %d | valor = %.2lf\n", vetor[i].chave, vetor[i].valor);
+    for (i = 0; i < 50; i++) {
+        printf("Chave: %d\n", vetor[i].chave);
+    }
+    printf("\n\n\n\n");
+    /*insercao(vetor, 50);
+    for (i = 0; i < 50; i++) {
+        printf("Chave: %d\n", vetor[i].chave);
     }*/
-   insercao(vetor,500000);
+    inicio = clock();
+    quicksort(vetor, 0, 49);
+    fim = clock();
+    tempo_quick = (double)(fim - inicio) / CLOCKS_PER_SEC;
+    printf("\n\n\n\n");
+    for (i = 0; i < 50; i++) {
+        printf("Chave: %d\n", vetor[i].chave);
+    }
 
-
+    printf("Tempo QuickSort: %.20f segundos\n", tempo_quick);
 
 }
 
