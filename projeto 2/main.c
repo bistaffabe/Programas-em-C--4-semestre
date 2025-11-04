@@ -1,6 +1,6 @@
 #include <stdlib.h>  // rand, srand
 #include <time.h>    // time
-#define TAM 50
+
 #include <stdio.h>
 #include <time.h>
 
@@ -10,14 +10,24 @@ typedef struct {
 }item;
 
 
-
-void geraVetorAleatorio(item vetor[], int tamanho,int sem) {
+void geraVetorAleatorio(item vetor[], int tamanho, int sem) {
     srand(sem);
-    for (int i = 0; i < tamanho; i++) {
-        vetor[i].chave = 100000 + rand() % 200001;  // entre 100000 e 300000
-        vetor[i].valor = 100000.0 + ((double)rand() / RAND_MAX) * 100000.0; // real > 100000
+
+    // Gera a primeira chave aleatória entre 100000 e 300000
+    vetor[0].chave = 100000 + rand() % 200001;
+
+    // Gera o valor correspondente (aleatório entre 100000 e 300000)
+    vetor[0].valor = 100000.0f + ((float)rand() / RAND_MAX) * 200000.0f;
+
+    // A partir do segundo elemento, incrementa 100 na chave
+    for (int i = 1; i < tamanho; i++) {
+        vetor[i].chave = vetor[i - 1].chave + 100;
+
+        // Valor continua aleatório (se quiser, pode seguir outro padrão)
+        vetor[i].valor = 100000.0f + ((float)rand() / RAND_MAX) * 200000.0f;
     }
 }
+
 
 void troca(item *a, item *b) {
     item temp = *a;
@@ -70,35 +80,26 @@ void quicksort(item *v, int LI, int LS)
 }
 
 
+
 int main()
 {
     int i;
+    int TAM=1000;
     item vetor[TAM];
     clock_t inicio, fim;
     double tempo_insercao, tempo_quick;
 
-    geraVetorAleatorio(vetor, TAM, 500);
-    printf("Exemplo de vetor aleatorio:\n");
-    for (i = 0; i < 50; i++) {
-        printf("Chave: %d\n", vetor[i].chave);
-    }
+    geraVetorAleatorio(vetor, TAM, 458);
+
+    //insercao(vetor,TAM);
+    quicksort(vetor,0,TAM-1);
     printf("\n\n\n\n");
-    /*insercao(vetor, 50);
-    for (i = 0; i < 50; i++) {
-        printf("Chave: %d\n", vetor[i].chave);
-    }*/
-    inicio = clock();
-    quicksort(vetor, 0, 49);
-    fim = clock();
-    tempo_quick = (double)(fim - inicio) / CLOCKS_PER_SEC;
-    printf("\n\n\n\n");
-    for (i = 0; i < 50; i++) {
-        printf("Chave: %d\n", vetor[i].chave);
+    for (i = 0; i < TAM; i++) {
+        printf("Chave %d: %d\n",i, vetor[i].chave);
     }
 
-    printf("Tempo QuickSort: %.20f segundos\n", tempo_quick);
+
 
 }
-
 
 
