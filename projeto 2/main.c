@@ -12,17 +12,16 @@ typedef struct {
 void geraCrescente(item vetor[], int tamanho, int sem) {
     srand(sem);
 
-    // Gera a primeira chave aleatória entre 100000 e 300000
+    
     vetor[0].chave = 100000 + rand() % 200001;
 
-    // Gera o valor correspondente (aleatório entre 100000 e 300000)
     vetor[0].valor = 100000.0f + ((float)rand() / RAND_MAX) * 200000.0f;
 
-    // A partir do segundo elemento, incrementa 100 na chave
+
     for (int i = 1; i < tamanho; i++) {
         vetor[i].chave = vetor[i - 1].chave + 100;
 
-        // Valor continua aleatório (se quiser, pode seguir outro padrão)
+
         vetor[i].valor = 100000.0f + ((float)rand() / RAND_MAX) * 200000.0f;
     }
 }
@@ -31,11 +30,11 @@ void geraCrescente(item vetor[], int tamanho, int sem) {
 
 
 void geraAleatorio(item v[], int n, int seed) {
-    srand(seed); // usa a mesma semente para repetir o mesmo conjunto
+    srand(seed);
 
     for (int i = 0; i < n; i++) {
-        v[i].chave = 100000 + rand() % 200001;               // entre 100000 e 300000
-        v[i].valor = 100000.0 + ((double)rand() / RAND_MAX) * 200000.0; // entre 100000 e 300000
+        v[i].chave = 100000 + rand() % 200001;               
+        v[i].valor = 100000.0 + ((double)rand() / RAND_MAX) * 200000.0; 
     }
 }
 
@@ -54,7 +53,7 @@ void insercao(item *v, int n) {
     for (i = 1; i < n; i++) {
         for (j=i;j>0;j--){
             if (v[j - 1].chave < v[j].chave) {
-                // ordem decrescente
+                
                 troca(&v[j - 1], &v[j]);
             }
         }
@@ -98,7 +97,7 @@ void quicksort(item *v, int LI, int LS)
 int particaoLS(item *v, int LI, int LS)
 {
     int aux, pivo, e = LI, d = LS;
-    pivo = v[d].chave;  // pivô é o último elemento
+    pivo = v[d].chave;  
 
     while (e < d)
     {
@@ -123,13 +122,13 @@ int particaoLS(item *v, int LI, int LS)
     v[LS].chave = v[e].chave;
     v[e].chave = aux;
 
-    return e;  // retorna a posição do pivô
+    return e; 
 }
 
 int particaoM(item *v, int LI, int LS)
 {
     int aux, pivo, e = LI, d = LS;
-    pivo = v[(LS + LI) / 2].chave;  // pivô central
+    pivo = v[(LS + LI) / 2].chave; 
 
     while (e < d)
     {
